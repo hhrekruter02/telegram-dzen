@@ -1,1 +1,71 @@
+# Имя рабочего процесса, которое будет отображаться во вкладке Actions
+name: Post to Telegram
 
+# Триггеры для запуска
+on:
+  # 1. Запуск по расписанию: каждый день в 7:00 UTC (10:00 по Москве)
+  # Вы можете настроить свое время с помощью сайта https://crontab.guru/
+  schedule:
+    - cron: '0 7 * * *'
+  
+  # 2. Позволяет запускать воркфлоу вручную из вкладки Actions на GitHub
+  workflow_dispatch:
+
+# Настройка для предотвращения одновременного запуска нескольких экземпляров
+# Это решает проблему двойной публикации, если триггеры срабатывают почти одновременно
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
+# Предоставляем воркфлоу права на запись в репозиторий.
+# Это необходимо для сохранения файла used_professions.txt
+permissions:
+  contents: write
+
+# Определение задач (jobs), которые будут выполняться
+jobs:
+  publish-post:
+    # Запускаем на последней версии Ubuntu, предоставляемой GitHub
+    runs-on: ubuntu-latest
+
+    # Шаги, которые будут выполнены последовательно
+    steps:
+      # Шаг 1: Клонирование репозитория
+      # Скачивает ваш код (скрипт, промпт и т.д.) на виртуальную машину
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Шаг 2: Настройка Python
+      # Устанавливает указанную версию Python
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11' # Рекомендуется использовать актуальную версию
+
+      # Шаг 3: Установка зависимостей
+      # Устанавливает библиотеки, перечисленные в requirements.txt (requests, google-generativeai)
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      # Шаг 4: Запуск основного скрипта Python
+      # Передаем все необходимые секреты в качестве переменных окружения
+      - name: Run Python script to post to Telegram
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHANNEL_ID: ${{ secrets.TELEGRAM_CHANNEL_ID }}
+          UNSPLASH_ACCESS_KEY: ${{ secrets.UNSPLASH_ACCESS_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python post_to_telegram.py
+
+      # Шаг 5: Сохранение изменений в репозиторий
+      # Этот шаг проверяет, был ли изменен файл used_professions.txt,
+      # и если да, то коммитит и отправляет эти изменения обратно в ваш репозиторий.
+      - name: Commit and push used professions list
+        run: |
+          git config --global user.name "GitHub Actions Bot"
+          git config --global user.email "actions-bot@github.com"
+          git add used_professions.txt
+          # Следующая строка коммитит, только если есть изменения
+          git diff-index --quiet HEAD || git commit -m "Update used professions list" && git push
