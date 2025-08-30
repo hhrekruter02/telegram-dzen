@@ -43,7 +43,7 @@ def get_random_office_photo(api_key):
     url = "https://api.unsplash.com/photos/random"
     params = {
         "client_id": api_key,
-        "query": "office, business, workplace, team, meeting",
+        "query": "empty office, modern office interior, office workplace, office design",
         "orientation": "landscape"
     }
     try:
