@@ -26,3 +26,4 @@ E-commerce аналитик
 DevOps Engineer
 Начальник отдела логистики
 Бэкенд-разработчик Golang
+UI/UX дизайнер
