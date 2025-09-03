@@ -27,3 +27,4 @@ DevOps Engineer
 Начальник отдела логистики
 Бэкенд-разработчик Golang
 UI/UX дизайнер
+Мобильный разработчик (iOS, Android, React Native, Flutter)
