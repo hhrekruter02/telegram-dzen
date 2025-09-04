@@ -30,3 +30,4 @@ UI/UX дизайнер
 Мобильный разработчик (iOS, Android, React Native, Flutter)
 Бэкенд-разработчик Python
 Финансовый менеджер / Аналитик
+Product Manager
