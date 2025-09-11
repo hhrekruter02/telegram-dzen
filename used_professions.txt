@@ -20,3 +20,4 @@ DevOps Engineer
 Сборщик заказов
 Менеджер по работе с клиентами
 Мобильный разработчик (iOS, Android, React Native, Flutter)
+SMM-менеджер
